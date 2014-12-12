@@ -1,0 +1,1 @@
+ImageJ-linux64 --headless /home/fiji_cmd_scripts/block_match_images.py --targetImage /home/test-data/linearAlignedImages/rib0000sess0000sect0000ch0000.tif --sourceImage /home/test-data/linearAlignedImages/rib0000sess0000sect0001ch0000.tif --blockMatchFile /home/test-data/blockMatchFiles/rib0000sect0001_to_rib0000sect0000.xml -v

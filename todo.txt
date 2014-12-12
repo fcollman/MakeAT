@@ -1,0 +1,19 @@
+DONE 1. bounding boxes aren't correct for applying the linear transforms, it needs to find the largest bounding box that includes the transformed stitched files and then make each section have the same size, so that the resulting images are all the same size and are aligned. else there will be some ambiguity about the translation to put different sized images into alignment.
+
+2. need to add in deconvolution. 
+  a. have the metadata contain the information about the filter set used to take the image (edit make_state.csv)
+  b. uploading the point spread functions for those filter sets
+  c. writing a command line based deconvolution algorithm (old one was in matlab),
+    takes as input a tile, and a point spread function, and a save file location.
+    outputs a deconvolved image of the tile to the save location.
+  d. writing in the deconvolution dependancies which link individual image tiles to the correct filterset input..  could either make the stitching dependant upon that, or could do the stitching/registration/alignment on the non-deconvolved images and just make reconstruction dependant upon deconvolution such that the final images are first deconvolved, then stitched (according to the layouts calculated by stitching), then registered (if they aren't in session 0), then linear alignments applied, then non-linear alignments applied.
+
+DONE.. BUT INEFFICENT AND OUTPUTS TOO LARGE 3. write the pairwise block matching wrapper. takes as input two images, and an output location. should calculate the pairwise block correspondances between those images and output the necessary information.
+
+4. write the global elastic alignment wrapper. takes as input all the pairwise block matching results, as well as the list of sections, and outputs a transformation for each section.
+
+5. write down the dependancies for elastic alignment into the make file.
+
+6. write the image tile reconstruction wrapper. takes as an input a set of image tiles, their stitching layouts, their registration transformation (optional), their alignment transformation(s), and maybe information about image sizes/bounds implicit in those transforms, and also a save location. stitches the image tiles, transforms them by the registration transform, both alignment transforms, and saves the resulting image to a location.
+
+7. write down the dependancies into the makefile for image tile reconstruction which takes all the tiles and makes recontructed image tiles for each channel on every section 
