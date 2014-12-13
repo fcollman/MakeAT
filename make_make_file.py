@@ -96,10 +96,19 @@ def write_stitching_dependancies(f,df,stitching_module,precommand='',map_chan=0)
     #command for making the stiching file and the stiched image of the map channel 
     f.write("\n\t%s%s "%(precommand,stitching_module))
     f.write("--outputLayout " + layoutfile + " --outputImage " + imagefile + " ")
-    
+    f.write("--imageFiles ")
     #with these images as inpus
     for index, row in map_images.iterrows():
-      f.write("%s %f %f "%(row['full_path'],row['a02'],row['a12']))
+      f.write("%s,"%row['full_path'])
+      
+    f.write(" --xoffsets ")
+    for index,row in map_images.iterrows():
+      f.write("%f,"%row['a02'])
+    
+    f.write(" --yoffsets ");
+    for index,row in map_images.iterrows():
+      f.write("%f,"%row['a12'])
+      
     f.write("\n\n")  
     
 
@@ -192,9 +201,10 @@ if __name__ == '__main__':
     assert os.path.isfile(inputFile), "'"+inputFile + "' is not a valid file"
     
 ImageJCommand = '~/packages/Fiji.app/ImageJ-linux64 --headless '
-FijiBentoCommand  = 'java -cp ~/FijiBento/target/render-0.0.1-SNAPSHOT.jar '
-scriptdir = '~/fiji-cmd-scripts/'
-stitching_module = scriptdir+'fiji_stitch.py'
+FijiBentoCommand  = 'java -cp ~/FijiBento/target/render-0.0.1-SNAPSHOT.jar:/home/fcollman/.m2/repository/sc/fiji/Fiji_Plugins/2.0.1/Fiji_Plugins-2.0.1.jar '
+scriptdir = '~/MakeAT/'
+#stitching_module = scriptdir+'fiji_stitch.py'
+stitching_module = 'org.janelia.alignment.StitchImagesByCC'
 
 #feature_extract_module = scriptdir+'extract_features.py'
 feature_extract_module = 'org.janelia.alignment.ComputeSiftFeaturesFromPath'
@@ -202,9 +212,9 @@ feature_extract_module = 'org.janelia.alignment.ComputeSiftFeaturesFromPath'
 #registration_module = scriptdir+'register_images.py'
 registration_module = 'org.janelia.alignment.MatchSiftFeaturesFromFile'
 
-linear_alignment_module = scriptdir + 'linear_align.py'
+#linear_alignment_module = scriptdir + 'linear_align.py'
 
-apply_linear_alignment_module = scriptdir + 'apply_linear_align.py'
+#apply_linear_alignment_module = scriptdir + 'apply_linear_align.py'
 
 
 map_chan=0
@@ -214,7 +224,7 @@ f = open(outputFile,'w')
 
 
 #write the stitching dependancies to the file
-write_stitching_dependancies(f,df,stitching_module,precommand=ImageJCommand)
+write_stitching_dependancies(f,df,stitching_module,precommand=FijiBentoCommand)
 
 #write the feature extraction dependancies
 write_feature_extract_dependancies(f,df,feature_extract_module,precommand=FijiBentoCommand)
