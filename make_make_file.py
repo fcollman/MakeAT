@@ -111,6 +111,49 @@ def write_stitching_dependancies(f,df,stitching_module,precommand='',map_chan=0)
       
     f.write("\n\n")  
     
+def write_reconstruction_dependancies(f,df,reconstruction_module,precommand='',mapchan=0):
+  #setup all the stitching transformation dependancies
+  uniq_stitches=df.groupby(['ribbon','session','section','ch']).groups.keys()
+    
+  f.write("reconstruction: ")
+  for (rib,sess,sect,chan) in uniq_stitches:
+      
+      imagefile='reconstruction/rib%04dsess%04dsect%04dch%04d.png '%(rib,sess,sect,chan)
+      f.write(imagefile)
+  f.write('\n\n')
+     
+  for (rib,sess,sect,chan) in uniq_stitches:
+      imagefile='reconstruction/rib%04dsess%04dsect%04dch%04d.png'%(rib,sess,sect,chan)
+      f.write(imagefile + ":")
+      alignment_transform='alignment_transforms/rib%04dsess%04dsect%04dch%04d.tif.xml'%(rib,0,sect,mapchan)
+      registration_transform='registration_transforms/rib%04dsess%04dsect%04d.txt'%(rib,sess,sect)
+      layout_file='stitch_layouts/rib%04dsess%04dsect%04d_stitch.txt'%(rib,sess,sect)
+      
+      map_images=df[(df['ribbon']==rib) & (df['session']==sess) & (df['section']==sect) & (df['ch']==chan)]
+      map_images=map_images.sort('frame')
+      
+      if sess>0:
+        f.write('%s %s %s\n'%(alignment_transform,registration_transform,layout_file))
+      else:
+        f.write('%s %s\n'%(alignment_transform,layout_file))
+        
+      f.write('\t%s '%precommand)
+      f.write('%s '%reconstruction_module)
+      f.write('--imageFiles ')
+      for index, row in map_images.iterrows():
+          f.write("%s,"%row['full_path'])
+      f.write(' ')
+      
+      f.write('--layoutFile %s '%layout_file)
+      if sess>0:
+        f.write('--registrationTransformFile %s '%registration_transform)
+      f.write('--alignmentTransformFile %s '%alignment_transform)
+      
+      f.write('--outputFile %s '%imagefile)
+      f.write('--boundBoxFile alignment_transforms/boundbox.xml')
+      f.write('\n\n')
+      
+
 
 def write_pairwise_alignment_dependancies(f,df,pairwise_alignment_module,precommand='',map_chan=0,Nhood=5,minDist=15.0):
     uniq_sections=df.groupby(['ribbon','section']).groups.keys()
@@ -201,8 +244,10 @@ if __name__ == '__main__':
     assert os.path.isfile(inputFile), "'"+inputFile + "' is not a valid file"
     
 ImageJCommand = '~/packages/Fiji.app/ImageJ-linux64 --headless '
-FijiBentoCommand  = 'java -cp ~/FijiBento/target/render-0.0.1-SNAPSHOT.jar:/home/fcollman/.m2/repository/sc/fiji/Fiji_Plugins/2.0.1/Fiji_Plugins-2.0.1.jar '
-scriptdir = '~/MakeAT/'
+renderJar = '~/FijiBento/target/render-0.0.1-SNAPSHOT.jar'
+FijiPluginJar = '/home/fcollman/.m2/repository/sc/fiji/Fiji_Plugins/2.0.1/Fiji_Plugins-2.0.1.jar'
+FijiBentoCommand  = 'java -cp %s:%s '%(renderJar,FijiPluginJar)
+#scriptdir = '~/MakeAT/'
 #stitching_module = scriptdir+'fiji_stitch.py'
 stitching_module = 'org.janelia.alignment.StitchImagesByCC'
 
@@ -213,8 +258,9 @@ feature_extract_module = 'org.janelia.alignment.ComputeSiftFeaturesFromPath'
 registration_module = 'org.janelia.alignment.MatchSiftFeaturesFromFile'
 
 #linear_alignment_module = scriptdir + 'linear_align.py'
-
 #apply_linear_alignment_module = scriptdir + 'apply_linear_align.py'
+
+reconstruction_module = 'org.janelia.alignment.ReconstructImage'
 
 
 map_chan=0
@@ -231,6 +277,10 @@ write_feature_extract_dependancies(f,df,feature_extract_module,precommand=FijiBe
   
 #write the registration dependancies to the file
 write_registration_dependancies(f,df,registration_module,precommand=FijiBentoCommand)
+
+#write the reconstruction dependancies to the file
+write_reconstruction_dependancies(f,df,reconstruction_module,precommand=FijiBentoCommand)
+
   
 #write the pairwise alignment dependancies to the file
 #write_pairwise_alignment_dependancies(f,df,registration_module,precommand=ImageJCommand)
