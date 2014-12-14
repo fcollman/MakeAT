@@ -118,12 +118,12 @@ def write_reconstruction_dependancies(f,df,reconstruction_module,precommand='',m
   f.write("reconstruction: ")
   for (rib,sess,sect,chan) in uniq_stitches:
       
-      imagefile='reconstruction/rib%04dsess%04dsect%04dch%04d.png '%(rib,sess,sect,chan)
+      imagefile='reconstruction/rib%04dsess%04dsect%04dch%04d.tif '%(rib,sess,sect,chan)
       f.write(imagefile)
   f.write('\n\n')
      
   for (rib,sess,sect,chan) in uniq_stitches:
-      imagefile='reconstruction/rib%04dsess%04dsect%04dch%04d.png'%(rib,sess,sect,chan)
+      imagefile='reconstruction/rib%04dsess%04dsect%04dch%04d.tif'%(rib,sess,sect,chan)
       f.write(imagefile + ":")
       alignment_transform='alignment_transforms/rib%04dsess%04dsect%04dch%04d.tif.xml'%(rib,0,sect,mapchan)
       registration_transform='registration_transforms/rib%04dsess%04dsect%04d.txt'%(rib,sess,sect)
