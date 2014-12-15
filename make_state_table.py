@@ -11,8 +11,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Create a state file describing the images in Stanfoord root folder format")
     #parser.add_argument('--inputDir', default=sys.stdout, type=argparse.FileType('r'),
     #    help='Path to the input directory.')
-    parser.add_argument('inputDirectory', nargs=1, help="Path to the input directory.")
-    parser.add_argument('outputFile', nargs=1, help="Path to output file.")
+    parser.add_argument('--inputDirectory', nargs=1, help="Path to the input directory.")
+    parser.add_argument('--outputFile', nargs=1, help="Path to output file.")
     args = parser.parse_args()
     
     rootdir = args.inputDirectory[0]
