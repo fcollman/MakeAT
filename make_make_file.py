@@ -243,9 +243,9 @@ if __name__ == '__main__':
     
     assert os.path.isfile(inputFile), "'"+inputFile + "' is not a valid file"
     
-ImageJCommand = '~/packages/Fiji.app/ImageJ-linux64 --headless '
-renderJar = '~/FijiBento/target/render-0.0.1-SNAPSHOT.jar'
-FijiPluginJar = '/home/fcollman/.m2/repository/sc/fiji/Fiji_Plugins/2.0.1/Fiji_Plugins-2.0.1.jar'
+ImageJCommand = os.path.expanduser('~/packages/Fiji.app/ImageJ-linux64')+ ' --headless '
+renderJar = os.path.expanduser('~/FijiBento/target/render-0.0.1-SNAPSHOT.jar')
+FijiPluginJar = os.path.expanduser('~/.m2/repository/sc/fiji/Fiji_Plugins/2.0.1/Fiji_Plugins-2.0.1.jar')
 FijiBentoCommand  = 'java -cp %s:%s '%(renderJar,FijiPluginJar)
 #scriptdir = '~/MakeAT/'
 #stitching_module = scriptdir+'fiji_stitch.py'
